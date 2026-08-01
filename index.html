@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>ATLAS 118 · Equipaggi di oggi</title>
+  <title>ATLAS 118 · Equipaggi diurni</title>
   <style>
     :root{
       color-scheme:dark;
@@ -41,7 +41,7 @@
     .date-day{font-size:18px;font-weight:850;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase}
     .date-main{margin-top:7px;font-size:32px;font-weight:850}
     .clock{margin-top:4px;font-size:18px;color:var(--muted)}
-    .shifts{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+    .shifts{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
     .shift{
       min-width:0;
       display:grid;
@@ -104,7 +104,7 @@
     <header class="top">
       <div>
         <div class="brand-kicker">ATLAS 118</div>
-        <div class="brand-title">EQUIPAGGI OPERATIVI DI OGGI</div>
+        <div class="brand-title">EQUIPAGGI DIURNI</div>
       </div>
       <div class="date">
         <div class="date-day" id="dateDay">—</div>
@@ -117,7 +117,7 @@
 
     <footer class="footer">
       <div class="status"><span class="dot" id="dot"></span><span id="status">Inizializzazione</span></div>
-      <div class="version">ATLAS TV · 2.0 · SOLA LETTURA</div>
+      <div class="version">ATLAS TV · EQUIPAGGI DIURNI · SOLA LETTURA</div>
     </footer>
   </main>
 
@@ -166,21 +166,13 @@
     };
 
     const shifts = [
-      {id:'M',name:'MATTINO',time:'06:00 — 13:30'},
-      {id:'P',name:'POMERIGGIO',time:'13:00 — 20:30'},
-      {id:'N',name:'NOTTE',time:'20:30 — 06:00'}
+      {id:'M',name:'MATTINA',time:'06:00 — 13:30'},
+      {id:'P',name:'POMERIGGIO',time:'13:00 — 20:30'}
     ];
 
     function expectedCrews(shift, day){
       const date = new Date(`${day}T00:00:00`);
       const saturday = date.getDay() === 6;
-
-      if(shift === 'N'){
-        return [
-          {site:'G',machine:'3',label:'Gallarate · Mezzo 3',roles:['A','C','S']},
-          {site:'S',machine:'3',label:'Somma Lombardo',roles:['A','C','S']}
-        ];
-      }
 
       if(shift === 'P' && saturday){
         return [
@@ -199,9 +191,18 @@
     function currentShift(){
       const now = new Date();
       const minutes = now.getHours()*60 + now.getMinutes();
-      if(minutes >= 6*60 && minutes < 13*60+30) return 'M';
-      if(minutes >= 13*60+30 && minutes < 20*60+30) return 'P';
-      return 'N';
+
+      if(
+        minutes >= 6*60 &&
+        minutes < 13*60+30
+      ) return 'M';
+
+      if(
+        minutes >= 13*60+30 &&
+        minutes < 20*60+30
+      ) return 'P';
+
+      return '';
     }
 
     function roleOrder(role){
