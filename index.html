@@ -116,7 +116,7 @@
     <section class="shifts" id="shifts"></section>
 
     <footer class="footer">
-      <div class="status"><span class="dot" id="dot"></span><span id="status">Inizializzazione</span></div>
+      <div class="status"><span class="dot" id="dot"></span><span id="status">Connessione al server in corso…</span></div>
       <div class="version">ATLAS TV · EQUIPAGGI DIURNI · SOLA LETTURA</div>
     </footer>
   </main>
@@ -126,10 +126,10 @@
     'use strict';
 
     const SERVER_URL =
-      'https://script.google.com/macros/s/AKfycbxbNUckXrc7U9W_kRM322w2yibgJ8aOtKuoUHUJtTWwm3F-_vaB9P1bQuuxKRuTX4c/exec';
+      'https://script.google.com/macros/s/AKfycbwC6wNURko6ZZeK7yRW9yePVe-366JrH4BGQN38FY-HObBRWPK6FbBOeQmGJ37wSCXq/exec';
     const REFRESH_SECONDS = 60;
     const KEY_STORAGE = 'atlas-tv-display-key-v2';
-    const CACHE_STORAGE = 'atlas-tv-today-cache-v2';
+    const CACHE_STORAGE = 'atlas-tv-today-cache-v3';
     const query = new URLSearchParams(location.search);
 
     const $ = selector => document.querySelector(selector);
@@ -161,8 +161,9 @@
     const state = {
       day: isoDay(new Date()),
       assignments: [],
-      source: 'server',
-      updatedAt: null
+      source: 'loading',
+      updatedAt: null,
+      errorMessage: ''
     };
 
     const shifts = [
@@ -278,17 +279,31 @@
       const dot = $('#dot');
       dot.className =
         'dot' + (state.source === 'server' ? '' : ' error');
-      $('#status').textContent =
-        state.source === 'server'
-          ?`Aggiornato alle ${state.updatedAt?.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}) || '--:--'}`
-          :'Connessione assente · ultimi dati memorizzati';
+
+      if(state.source === 'server'){
+        $('#status').textContent =
+          `Aggiornato alle ${state.updatedAt?.toLocaleTimeString(
+            'it-IT',
+            {hour:'2-digit',minute:'2-digit'}
+          ) || '--:--'}`;
+      }else if(state.source === 'cache'){
+        $('#status').textContent =
+          `Ultimi dati memorizzati · ${state.errorMessage || 'server non raggiungibile'}`;
+      }else if(state.source === 'key'){
+        $('#status').textContent =
+          'CHIAVE TV MANCANTE · aggiungere ?key=... all’URL Yodeck';
+      }else{
+        $('#status').textContent =
+          state.errorMessage || 'Connessione al server in corso…';
+      }
     }
 
     async function load(){
       if(DISPLAY_KEY.length < 32){
-        throw new Error(
-          'Chiave TV mancante nell’URL Yodeck.'
-        );
+        state.source = 'key';
+        state.errorMessage =
+          'Chiave TV mancante nell’URL Yodeck.';
+        throw new Error(state.errorMessage);
       }
 
       const controller = new AbortController();
@@ -340,6 +355,7 @@
             :[];
         state.updatedAt = new Date();
         state.source = 'server';
+        state.errorMessage = '';
 
         localStorage.setItem(
           CACHE_STORAGE,
@@ -382,10 +398,28 @@
       try{
         await load();
       }catch(error){
-        loadCache();
-        state.source = 'cache';
-        console.error(error);
+        const message =
+          error?.name === 'AbortError'
+            ?'timeout collegamento Apps Script'
+            :String(
+                error?.message ||
+                'server non raggiungibile'
+              );
+
+        state.errorMessage = message;
+
+        if(state.source !== 'key'){
+          state.source = loadCache()
+            ?'cache'
+            :'error';
+        }
+
+        console.error(
+          '[ATLAS TV]',
+          message
+        );
       }
+
       render();
     }
 
