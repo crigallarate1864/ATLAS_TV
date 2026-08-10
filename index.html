@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ATLAS 118 · Equipaggi</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#070d12;
+      --panel:#0d151c;
+      --panel2:#111c24;
+      --line:#26333c;
+      --line-soft:#1c2830;
+      --text:#f4f7f8;
+      --muted:#8999a4;
+      --red:#d9273c;
+      --red2:#b81e31;
+      --green:#4cc98f;
+      --blue:#4f8fb8;
+      --amber:#c59c51;
+    }
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden}
+    body{
+      font-family:Inter,"Segoe UI",Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 50% -20%,rgba(67,95,112,.14),transparent 42%),
+        linear-gradient(180deg,#091118,#050a0e);
+    }
+    .screen{
+      height:100%;
+      display:grid;
+      grid-template-rows:88px 1fr 36px;
+      gap:14px;
+      padding:18px 22px 14px;
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:24px;
+      border-bottom:1px solid var(--line);padding:0 4px 14px;
+    }
+    .brand{display:flex;align-items:center;gap:14px}
+    .cri-mark{
+      width:50px;height:50px;border-radius:50%;background:#fff;
+      display:grid;place-items:center;box-shadow:0 7px 20px rgba(0,0,0,.25)
+    }
+    .cri-cross{position:relative;width:28px;height:28px}
+    .cri-cross:before,.cri-cross:after{content:"";position:absolute;background:var(--red)}
+    .cri-cross:before{width:10px;height:28px;left:9px;top:0}
+    .cri-cross:after{height:10px;width:28px;top:9px;left:0}
+    .atlas{font-size:34px;font-weight:950;letter-spacing:-.045em;line-height:1}
+    .atlas span{color:var(--red)}
+    .sub{margin-top:5px;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.15em}
+    .datetime{text-align:right}
+    .date{font-size:14px;font-weight:800;text-transform:capitalize;color:#dce4e8}
+    .clock{font-size:30px;font-weight:950;letter-spacing:-.04em;margin-top:2px}
+    .board{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .shift{
+      min-height:0;display:grid;grid-template-rows:58px 1fr;
+      border:1px solid var(--line);border-radius:18px;background:rgba(12,21,28,.96);
+      overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.24)
+    }
+    .shift-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:0 18px;border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.018),transparent)
+    }
+    .shift-title{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:950}
+    .shift-accent{width:4px;height:25px;border-radius:99px;background:var(--blue)}
+    .shift[data-shift="P"] .shift-accent{background:var(--amber)}
+    .shift-time{font-size:12px;color:#aab6bc;font-weight:800}
+    .crew-list{min-height:0;display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:9px;padding:10px}
+    .crew-card{
+      min-height:0;display:grid;grid-template-columns:150px minmax(0,1fr);
+      border:1px solid var(--line-soft);border-radius:14px;
+      background:linear-gradient(145deg,#101a21,#0b1319);overflow:hidden;
+    }
+    .vehicle{
+      position:relative;display:grid;place-items:center;padding:8px 10px;
+      border-right:1px solid var(--line-soft);
+      background:linear-gradient(160deg,#15232c,#0c171d)
+    }
+    .vehicle:before{
+      content:"";position:absolute;left:18px;right:18px;bottom:15px;height:8px;
+      border-radius:50%;background:rgba(0,0,0,.42);filter:blur(5px)
+    }
+    .ambulance-svg{position:relative;z-index:1;width:100%;max-width:142px;height:auto;filter:drop-shadow(0 9px 7px rgba(0,0,0,.26))}
+    .crew-body{min-width:0;padding:10px 13px;display:grid;grid-template-rows:auto 1fr}
+    .crew-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.055)}
+    .crew-location{font-size:14px;font-weight:950;letter-spacing:.01em}
+    .crew-machine{font-size:10px;font-weight:800;color:var(--muted)}
+    .roles{display:grid;align-content:center;gap:5px;padding-top:6px}
+    .role-row{display:grid;grid-template-columns:29px minmax(0,1fr);align-items:center;gap:9px;min-height:27px}
+    .role-badge{height:25px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:950;background:#24333d;color:#fff}
+    .role-A{background:#1c5a43} .role-C{background:#204c69} .role-S{background:#71303a}
+    .role-name{font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+    .role-name.vacant{color:#c77f89;font-weight:800}
+    .crew-state{display:inline-flex;align-items:center;gap:6px;font-size:9px;color:#76909c;font-weight:850}
+    .crew-state i{width:6px;height:6px;border-radius:50%;background:var(--green)}
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:8px 4px 0;color:var(--muted);font-size:10px}
+    .connection{display:flex;align-items:center;gap:8px}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green)} .status-dot.loading{background:var(--amber)} .status-dot.error{background:var(--red)}
+    .build{font-weight:800;letter-spacing:.08em}
+    @media(max-width:1200px){
+      .screen{padding:14px;grid-template-rows:72px 1fr 30px;gap:9px}
+      .atlas{font-size:27px} .crew-card{grid-template-columns:110px minmax(0,1fr)} .role-name{font-size:12px}
+      .crew-location{font-size:12px} .vehicle{padding:6px}
+    }
+  </style>
+</head>
+<body>
+<main class="screen">
+  <header class="topbar">
+    <div class="brand">
+      <div class="cri-mark"><div class="cri-cross"></div></div>
+      <div><div class="atlas">ATLAS <span>118</span></div><div class="sub">EQUIPAGGI OPERATIVI · CRI GALLARATE</div></div>
+    </div>
+    <div class="datetime"><div class="date" id="date">—</div><div class="clock" id="clock">--:--</div></div>
+  </header>
+  <section class="board" id="board"></section>
+  <footer class="footer">
+    <div class="connection"><span class="status-dot loading" id="statusDot"></span><span id="statusText">Connessione ai dati ATLAS…</span></div>
+    <div class="build">ATLAS TV · BUILD 2322 POST SAFE</div>
+  </footer>
+</main>
+
+<script>
+(()=>{
+  'use strict';
+  const SERVER_URL='https://script.google.com/macros/s/AKfycbzQv_9pxwVhbjLJuKysh0a52G5BBaGxzKuD38ky4Uigr3YQpG09yBr2pdIrz9gmUnYG/exec';
+  const REFRESH_MS=60000;
+  const CACHE_KEY='atlas-tv-pro-2322-post';
+  const shifts=[
+    {id:'M',label:'MATTINA',fallback:'06:00 — 13:30'},
+    {id:'P',label:'POMERIGGIO',fallback:'13:00 — 20:30'}
+  ];
+  let state={day:'',assignments:[],source:'loading',updatedAt:null,error:''};
+  let loadTimer=null;
+  const $=s=>document.querySelector(s);
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const pad=n=>String(n).padStart(2,'0');
+
+  function ambulanceSvg(){
+    return `<svg class="ambulance-svg" viewBox="0 0 220 122" aria-hidden="true">
+      <defs>
+        <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".52" stop-color="#e7ebed"/><stop offset="1" stop-color="#aeb7bc"/></linearGradient>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#405664"/><stop offset="1" stop-color="#14232c"/></linearGradient>
+      </defs>
+      <path d="M28 33h112c10 0 18 4 24 14l16 25h18c7 0 12 5 12 12v17H17V48c0-9 4-15 11-15z" fill="url(#b)" stroke="#7e898f" stroke-width="1.2"/>
+      <path d="M142 39h15c6 0 11 3 15 10l13 21h-43z" fill="url(#g)"/>
+      <path d="M29 66h158" stroke="#cf2438" stroke-width="9"/>
+      <path d="M37 38h48v23H37z" fill="#f8fafb"/>
+      <path d="M55 40h13v19H55zM46 47h31v7H46z" fill="#d8283c"/>
+      <rect x="95" y="27" width="23" height="7" rx="2" fill="#357ea4"/><rect x="122" y="28" width="18" height="6" rx="2" fill="#cc3548"/>
+      <path d="M189 77h18v9h-18" fill="#e9ecee"/><path d="M17 77h11v8H17" fill="#d1283b"/>
+      <circle cx="58" cy="99" r="17" fill="#10171b"/><circle cx="58" cy="99" r="8" fill="#737f85"/><circle cx="174" cy="99" r="17" fill="#10171b"/><circle cx="174" cy="99" r="8" fill="#737f85"/>
+      <path d="M95 69v31M132 69v31" stroke="#9ea9ae" stroke-width="1"/>
+    </svg>`;
+  }
+
+  function roleOrder(role){return ({A:0,C:1,S:2})[String(role||'').toUpperCase()]??9}
+  function siteName(site){return ({G:'GALLARATE',S:'SOMMA LOMBARDO',SU:'SUMIRAGO'})[site]||site}
+  function expectedRoles(machine){return String(machine)==='2'?['A','C']:['A','C','S']}
+
+  function tvName(item){
+    const first=String(item?.firstName||'').trim();
+    const last=String(item?.lastName||'').trim();
+    if(first){
+      const initial=last?last.charAt(0).toUpperCase()+'.':'';
+      return `${first.toUpperCase()}${initial?' '+initial:''}`;
+    }
+    const raw=String(item?.displayName||item?.employeeName||item?.employeeId||'').trim();
+    if(!raw)return'';
+    const parts=raw.split(/\s+/).filter(Boolean);
+    if(parts.length===1)return parts[0].toUpperCase();
+    return `${parts[0].toUpperCase()} ${parts[parts.length-1].charAt(0).toUpperCase()}.`;
+  }
+
+  function belongsToShift(item,shift){
+    const s=String(item?.shift||'').toUpperCase();
+    const site=String(item?.site||'').toUpperCase();
+    const code=String(item?.code||'').toUpperCase();
+    if(s===shift)return true;
+    // GSA/GSC/GSS = Somma 08:00–20:00: presenti sia M che P.
+    if((s==='G'||['GSA','GSC','GSS'].includes(code))&&site==='S'&&['M','P'].includes(shift))return true;
+    return false;
+  }
+
+  function actualGroups(shift){
+    const map=new Map();
+    state.assignments.filter(item=>belongsToShift(item,shift)).forEach(item=>{
+      let site=String(item.site||'').toUpperCase();
+      let machine=String(item.machine||'3');
+      const code=String(item.code||'').toUpperCase();
+      if(['GSA','GSC','GSS'].includes(code)){site='S';machine='3'}
+      const key=`${site}|${machine}`;
+      if(!map.has(key))map.set(key,{site,machine,records:[]});
+      map.get(key).records.push(item);
+    });
+    return map;
+  }
+
+  function expectedKeys(shift){
+    const day=new Date();
+    const dow=day.getDay();
+    if(dow===6&&shift==='P')return['G|2','S|3'];
+    return['G|2','G|3','S|3'];
+  }
+
+  function groupsForShift(shift){
+    const map=actualGroups(shift);
+    expectedKeys(shift).forEach(key=>{
+      if(!map.has(key)){
+        const [site,machine]=key.split('|');
+        map.set(key,{site,machine,records:[]});
+      }
+    });
+    const order={'G|2':0,'G|3':1,'S|3':2,'SU|3':3};
+    return [...map.values()].sort((a,b)=>(order[`${a.site}|${a.machine}`]??9)-(order[`${b.site}|${b.machine}`]??9));
+  }
+
+  function shiftTime(shift){
+    const rec=state.assignments.find(item=>belongsToShift(item,shift)&&item.start&&item.end);
+    if(rec){
+      const a=String(rec.start).match(/T(\d{2}:\d{2})/);
+      const b=String(rec.end).match(/T(\d{2}:\d{2})/);
+      if(a&&b)return`${a[1]} — ${b[1]}`;
+    }
+    return shifts.find(x=>x.id===shift)?.fallback||'';
+  }
+
+  function crewCard(group){
+    const roles=expectedRoles(group.machine);
+    const records=[...group.records].sort((a,b)=>roleOrder(a.role)-roleOrder(b.role));
+    const hasAny=records.length>0;
+    return `<article class="crew-card">
+      <div class="vehicle">${ambulanceSvg()}</div>
+      <div class="crew-body">
+        <div class="crew-meta">
+          <span class="crew-location">${esc(siteName(group.site))}</span>
+          <span class="crew-machine">MEZZO ${esc(group.machine)}</span>
+        </div>
+        <div class="roles">
+          ${roles.map(role=>{
+            const item=records.find(r=>String(r.role||'').toUpperCase()===role);
+            const name=item?tvName(item):'';
+            return `<div class="role-row"><span class="role-badge role-${role}">${role}</span><span class="role-name ${name?'':'vacant'}">${esc(name||'DA COPRIRE')}</span></div>`;
+          }).join('')}
+          <div class="crew-state"><i></i>${hasAny?'EQUIPAGGIO REGISTRATO':'IN ATTESA DATI / COPERTURA'}</div>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function render(){
+    const now=new Date();
+    $('#date').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+    $('#clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    $('#board').innerHTML=shifts.map(shift=>`<section class="shift" data-shift="${shift.id}">
+      <header class="shift-head"><div class="shift-title"><span class="shift-accent"></span>${shift.label}</div><div class="shift-time">${esc(shiftTime(shift.id))}</div></header>
+      <div class="crew-list">${groupsForShift(shift.id).map(crewCard).join('')}</div>
+    </section>`).join('');
+    const dot=$('#statusDot');
+    dot.className='status-dot '+(state.source==='server'?'':state.source==='loading'?'loading':'error');
+    if(state.source==='server')$('#statusText').textContent=`Dati aggiornati · ${state.updatedAt?.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})||'--:--'}`;
+    else if(state.source==='cache')$('#statusText').textContent=`Dati memorizzati · ${state.error||'server momentaneamente non raggiungibile'}`;
+    else if(state.source==='error')$('#statusText').textContent=`Dati non disponibili · ${state.error||'errore collegamento'}`;
+    else $('#statusText').textContent='Connessione ai dati ATLAS…';
+  }
+
+  function saveCache(){try{localStorage.setItem(CACHE_KEY,JSON.stringify({day:state.day,assignments:state.assignments,updatedAt:state.updatedAt?.toISOString()||''}))}catch{}}
+  function loadCache(){try{const d=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');if(!d||!Array.isArray(d.assignments))return false;state.day=d.day||'';state.assignments=d.assignments;state.updatedAt=d.updatedAt?new Date(d.updatedAt):null;state.source='cache';return true}catch{return false}}
+
+  function acceptData(data){
+    clearTimeout(loadTimer);
+    if(!data||data.ok!==true){
+      state.error=String(data?.error||'risposta server non valida');
+      state.source=loadCache()?'cache':'error';
+      render();
+      return;
+    }
+    state.day=data.day||'';
+    state.assignments=Array.isArray(data.assignments)?data.assignments:[];
+    state.updatedAt=new Date();
+    state.source='server';
+    state.error=data.cached?String(data.warning||'dati da cache server'):'';
+    saveCache();
+    render();
+  }
+
+  async function refresh(){
+    state.source=state.assignments.length?state.source:'loading';
+    render();
+    const controller=new AbortController();
+    clearTimeout(loadTimer);
+    loadTimer=setTimeout(()=>controller.abort(),20000);
+    try{
+      const response=await fetch(SERVER_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({action:'tvToday'}),
+        redirect:'follow',
+        cache:'no-store',
+        signal:controller.signal
+      });
+      const raw=await response.text();
+      let data;
+      try{data=JSON.parse(raw)}catch{throw new Error('Risposta ATLAS non valida')}
+      if(!response.ok)throw new Error(data?.error||`Errore HTTP ${response.status}`);
+      acceptData(data);
+    }catch(error){
+      clearTimeout(loadTimer);
+      state.error=error?.name==='AbortError'?'timeout collegamento':String(error?.message||'collegamento non riuscito');
+      state.source=loadCache()?'cache':'error';
+      render();
+      console.error('[ATLAS TV]',error);
+    }
+  }
+  setInterval(render,1000);
+  setInterval(refresh,REFRESH_MS);
+  render();refresh();
+})();
+</script>
+</body>
+</html>
